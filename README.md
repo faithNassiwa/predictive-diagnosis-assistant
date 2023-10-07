@@ -7,3 +7,5 @@ The Predictive Diagnosis Assistant is a tool designed to expedite and streamline
 The main dataset to be utilized comprises diagnoses, symptoms and patient records. Our approach involves training and testing multinomial classification models to predict possible diseases based on entered symptoms and integrate the best-performing model into an Electronic Medical Records (EMR) platform that will be hosted on a cloud server.  
 
 Ultimately, the overarching goal is to enhance patient care. By providing doctors with a tool that accelerates the diagnostic process, offers data-backed insights and data driven decisions, the project contributes to better patient outcomes, faster treatment and improved services.   
+
+[Pitch Deck] (https://docs.google.com/presentation/d/1o0y3Os1FTEI1bSuc0_SHDHiaDXHbOl9T7HqM-yHe5WU/edit#slide=id.g285c9579291_0_336)
