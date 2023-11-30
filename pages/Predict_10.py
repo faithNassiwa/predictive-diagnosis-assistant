@@ -1,6 +1,22 @@
 import streamlit as st
+import joblib
+from xgboost import XGBClassifier
 
 st.title('Predictive Diagnosis Assistant')
+
+# Load trained model
+model = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
+
+
+# Function to collect responses from the form
+def collect_responses(swollen_lymph_nodes, hiv_intercourse, taking_noacs, chronic_copd, heart_failure,
+                      diagnosis_of_anemia, had_sti, skin_issues, taken_antipsychotics, unprotected_sex,
+                      itchy_nose_throat, recent_surgery, take_stimulant_drugs, exposed_to_smoke, immunosuppressed,
+                      pain_related, severe_eye_itching,rash_color, swelling_location, affected_region ):
+    # This function should collect all responses from the form
+    # and format them in the way your model expects (e.g., as a list or array)
+    return []
+
 
 def medical_questionnaire():
     with st.form("medical_questionnaire"):
@@ -46,3 +62,18 @@ def medical_questionnaire():
         affected_region = st.selectbox("Where is the affected region located?", affected_region_options)
 
         predict_10 = st.form_submit_button('predict_10')
+
+        if predict_10:
+            # [Collect responses]
+            responses = collect_responses(swollen_lymph_nodes, hiv_intercourse, taking_noacs, chronic_copd, heart_failure,
+                      diagnosis_of_anemia, had_sti, skin_issues, taken_antipsychotics, unprotected_sex,
+                      itchy_nose_throat, recent_surgery, take_stimulant_drugs, exposed_to_smoke, immunosuppressed,
+                      pain_related, severe_eye_itching,rash_color, swelling_location, affected_region)
+
+            # Generate prediction
+            prediction = model.predict([responses])
+
+            # Display the prediction
+            st.write(f"Predicted Disease: {prediction[0]}")
+
+medical_questionnaire()
