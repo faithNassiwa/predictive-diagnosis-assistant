@@ -12,6 +12,7 @@ def get_key_by_value(dict, search_value):
             return key
     return None  # Return None if the value is not found
 
+
 def convert_number_to_disease(num, mapping_dict=mapping_dict, disease_dict=disease_dict):
     # Check if the number is in the mapping dictionary
     if num in mapping_dict.values():

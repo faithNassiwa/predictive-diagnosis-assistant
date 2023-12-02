@@ -1,48 +1,176 @@
 import streamlit as st
+import joblib
+import pandas as pd
+import numpy as np
+from xgboost import XGBClassifier
+from utils import *
 
 st.title('Predictive Diagnosis Assistant')
 
-def medical_questionnaire():
-    with st.form("medical_questionnaire"):
-        # Medical History
-        st.subheader("Medical History")
-        swollen_lymph_nodes = st.radio("Do you have swollen or painful lymph nodes?", ['Yes', 'No'], index=1)
-        hiv_intercourse = st.radio("Have you had sexual intercourse with an HIV-positive partner in the past 12 months?", ['Yes', 'No'], index=1)
-        taking_noacs = st.radio("Are you taking any new oral anticoagulants (NOACs)?", ['Yes', 'No'], index=1)
-        chronic_copd = st.radio("Do you have chronic obstructive pulmonary disease (COPD)?", ['Yes', 'No'], index=1)
-        heart_failure = st.radio("Do you have heart failure?", ['Yes', 'No'], index=1)
-        diagnosis_of_anemia = st.radio("Have you ever had a diagnosis of anemia?", ['Yes', 'No'], index=1)
-        had_sti = st.radio("Have you ever had a sexually transmitted infection?", ['Yes', 'No'], index=1)
-        skin_issues = st.radio("Do you have any lesions, redness, or problems on your skin related to your condition?", ['Yes', 'No'], index=1)
-        taken_antipsychotics = st.radio("Have you started or taken any antipsychotic medication within the last 7 days?", ['Yes', 'No'], index=1)
+# Load trained model
+model_top_20 = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
 
-        # Lifestyle and Environmental Factors
-        st.subheader("Lifestyle and Environmental Factors")
-        unprotected_sex = st.radio("Have you had unprotected sex with more than one partner in the last 6 months?", ['Yes', 'No'], index=1)
-        itchy_nose_throat = st.radio("Is your nose or the back of your throat itchy?", ['Yes', 'No'], index=1)
-        recent_surgery = st.radio("Have you had surgery within the last month?", ['Yes', 'No'], index=1)
-        take_stimulant_drugs = st.radio("Do you regularly take stimulant drugs?", ['Yes', 'No'], index=1)
-        exposed_to_smoke = st.radio("Are you exposed to secondhand cigarette smoke on a daily basis?", ['Yes', 'No'], index=1)
+# Load test data
+test_df = pd.read_csv('data/subset_test.csv')
+st.write('Test Dataset')
+st.dataframe(test_df)
 
-        # Social History
-        st.subheader("Social History")
-        immunosuppressed = st.radio("Are you immunosuppressed?", ['Yes', 'No'], index=1)
-        pain_related = st.radio("Do you have pain somewhere, related to your reason for consulting?", ['Yes', 'No'], index=1)
-        severe_eye_itching = st.radio("Do you have severe itching in one or both eyes?", ['Yes', 'No'], index=1)
+# Preprocessing
+X_columns = [col for col in test_df.columns if col not in ['Unnamed: 0', 'PATHOLOGY']]
+X_test = test_df[X_columns]
+y_test = test_df['PATHOLOGY']
 
-        # Multiple Choice Questions
-        st.subheader("Additional Details")
-        rash_color_options = ['0', 'pale', 'pink', 'yellow', 'red']
-        rash_color = st.selectbox("What color is the rash?", rash_color_options)
+most_important_102_features = ['Have you had sexual intercourse with an HIV-positive partner in the past 12 '
+ 'months?',
+ 'Do you have an active cancer?',
+ 'Are you more irritable or has your mood been very unstable recently?',
+ 'Do you have painful mouth ulcers or sores?',
+ 'Are you currently being treated or have you recently been treated with an '
+ 'oral antibiotic for an ear infection?',
+ 'Have you been unable to move or get up for more than 3 consecutive days '
+ 'within the last 4 weeks?',
+ 'Do you have a known kidney problem resulting in an inability to retain '
+ 'proteins?',
+ 'Have you been in contact with or ate something that you have an allergy to?',
+ 'Have you had chills or shivers?',
+ 'Do you have a known severe food allergy?',
+ 'Are you consulting because you have high blood pressure?',
+ 'Did your cheeks suddenly turn red?',
+ 'Have you been unintentionally losing weight or have you lost your appetite?',
+ 'Are you taking any new oral anticoagulants ((NOACs)?',
+ 'Have you had unprotected sex with more than one partner in the last 6 '
+ 'months?',
+ 'Have you ever had surgery to remove lymph nodes?',
+ 'Have you noticed weakness in your facial muscles and/or eyes?',
+ 'Have you had 2 or more asthma attacks in the past year?',
+ 'Have you started or taken any antipsychotic medication within the last 7 '
+ 'days?',
+ 'Do you have family members who have had lung cancer?',
+ 'Do you currently take hormones?',
+ 'Do you feel like you are dying or were you afraid that you were about do '
+ 'die?',
+ 'Do you feel your abdomen is bloated or distended (swollen due to pressure '
+ 'from inside)?',
+ 'Do you have a burning sensation that starts in your stomach then goes up '
+ 'into your throat, and can be associated with a bitter taste in your mouth?',
+ 'Have any of your family members been diagnosed with cluster headaches?',
+ 'Do your lesions peel off?',
+ 'Do you have numbness, loss of sensation or tingling in the feet?',
+ 'Have you been treated in hospital recently for nausea, agitation, '
+ 'intoxication or aggressive behavior and received medication via an '
+ 'intravenous or intramuscular route?',
+ 'Do you consume energy drinks regularly?',
+ 'Have you been able to pass stools or gas since your symptoms increased?',
+ 'Do you feel your heart is beating very irregularly or in a disorganized '
+ 'pattern?',
+ 'Do you have any close family members who suffer from allergies (any type), '
+ 'hay fever or eczema?',
+ 'Have you had weakness or paralysis on one side of the face, which may still '
+ 'be present or completely resolved?',
+ 'Have you recently taken decongestants or other substances that may have '
+ 'stimulant effects?',
+ 'Is your nose or the back of your throat itchy?',
+ 'Do you have the perception of seeing two images of a single object seen '
+ 'overlapping or adjacent to each other (double vision)?',
+ 'Did you have your first menstrual period before the age of 12?',
+ 'Do you regularly drink coffee or tea?',
+ 'Were you born prematurely or did you suffer any complication at birth?',
+ 'Have you been diagnosed with hyperthyroidism?',
+ 'Do you have cystic fibrosis?',
+ 'Have you vomited several times or have you made several efforts to vomit?',
+ 'Have you had one or several flare ups of chronic obstructive pulmonary '
+ 'disease (COPD) in the past year?',
+ 'Do you have a problem with poor circulation?',
+ 'Have you ever had a spontaneous pneumothorax?',
+ 'Do you have severe itching in one or both eyes?',
+ 'Do you find that your symptoms have worsened over the last 2 weeks and that '
+ 'progressively less effort is required to cause the symptoms?',
+ 'Have you ever had a diagnosis of anemia?',
+ 'Do you suffer from chronic anxiety?',
+ 'Do you work in agriculture?',
+ 'Do you take medication that dilates your blood vessels?',
+ 'Do you have a known heart defect?',
+ 'Do you feel out of breath with minimal physical effort?',
+ 'Have you been diagnosed with chronic sinusitis?',
+ 'Do you have pain that improves when you lean forward?',
+ 'Do you have Rheumatoid Arthritis?',
+ 'Have you had diarrhea or an increase in stool frequency?',
+ 'Have you or any member of your family ever had croup?',
+ 'Have you noticed that you produce more saliva than usual?',
+ 'Have you ever had fluid in your lungs?',
+ 'Have you ever had a pericarditis?',
+ 'Did you vomit after coughing?',
+ 'Do you have pain that is increased with movement?',
+ 'Do you have a sore throat?',
+ 'Have you ever had a sexually transmitted infection?',
+ 'Do you have symptoms that get worse after eating?',
+ 'Do you have chronic kidney failure?',
+ 'Are you infected with the human immunodeficiency virus (HIV)?',
+ 'Do you have annoying muscle spasms in your face, neck or any other part of '
+ 'your body?',
+ 'Have you ever been diagnosed with obstructive sleep apnea (OSA)?',
+ 'Do you work in the mining sector?',
+ 'Have you been in contact with a person with similar symptoms in the past 2 '
+ 'weeks?',
+ 'Do you have liver cirrhosis?',
+ 'Are your symptoms more prominent at night?',
+ 'Are the symptoms or pain increased with coughing, with an effort like '
+ 'lifting a weight or from forcing a bowel movement?',
+ 'Do you have any lesions, redness or problems on your skin that you believe '
+ 'are related to the condition you are consulting for?',
+ 'Have you noticed that the tone of your voice has become deeper, softer or '
+ 'hoarse?',
+ 'Do you have difficulty articulating words/speaking?',
+ 'In the last month, have you been in contact with anyone infected with the '
+ 'Ebola virus?',
+ 'Do you take a calcium channel blockers (medication)?',
+ 'Is the lesion (or are the lesions) larger than 1cm?',
+ 'Are you currently using intravenous drugs?',
+ 'Are you immunosuppressed?',
+ 'Have any of your family members ever had a pneumothorax?',
+ 'Do you feel that your eyes produce excessive tears?',
+ 'Does the person have a whooping cough?',
+ 'Do you feel so tired that you are unable to do your usual activities or are '
+ 'you stuck in your bed all day long?',
+ 'What color is the rash?',
+ 'Do you have pain or weakness in your jaw?',
+ 'Have you ever been diagnosed with depression?',
+ 'Where is the swelling located?',
+ 'Have you been hospitalized for an asthma attack in the past year?',
+ 'Do you have polyps in your nose?',
+ 'Do you suffer from Crohn’s disease or ulcerative colitis (UC)?',
+ 'Do you work in construction?',
+ 'Do you have pain somewhere, related to your reason for consulting?',
+ 'Do you have chest pain even at rest?',
+ 'Do you currently undergo dialysis?',
+ 'Do you have a poor diet?',
+ 'Are your vaccinations up to date?',
+ 'Are you exposed to secondhand cigarette smoke on a daily basis?',
+ 'Do you have a decrease in appetite?']
 
-        swelling_location_options = ['0', 'cheek(L)', 'tibia(L)', 'nowhere', 'dorsal aspect of the foot(R)', 'nose', 'calf(R)', 'dorsal aspect of the foot(L)', 'calf(L)', 'sole(L)', 'posterior aspect of the ankle(L)', 'sole(R)', 'tibia(R)', 'cheek(R)', 'posterior aspect of the ankle(R)', 'ankle(L)', 'forehead', 'thigh(R)', 'ankle(R)', 'thigh(L)', 'toe (1)(R)', 'toe (1)(L)', 'toe (2)(R)']
-        swelling_location = st.selectbox("Where is the swelling located?", swelling_location_options)
+most_important_20_features = ["Do you have swollen or painful lymph nodes?" ,
+        "Have you had sexual intercourse with an HIV-positive partner in the past 12 months?",
+        "Are you taking any new oral anticoagulants ((NOACs)?",
+        "Have you had unprotected sex with more than one partner in the last 6 months?",
+        "Is your nose or the back of your throat itchy?",
+        "Are you immunosuppressed?",
+        "Have you had surgery within the last month?",
+        "Do you have a chronic obstructive pulmonary disease (COPD)?",
+        "Do you regularly take stimulant drugs?",
+        "Are you exposed to secondhand cigarette smoke on a daily basis?",
+        "Do you have heart failure?",
+        "What color is the rash?",
+        "Have you ever had a diagnosis of anemia?",
+        "Where is the swelling located?",
+        "Have you ever had a sexually transmitted infection?",
+        "Where is the affected region located?",
+        "Do you have any lesions, redness or problems on your skin that you believe are related to the condition you are consulting for?",
+        "Have you started or taken any antipsychotic medication within the last 7 days?",
+        "Do you have pain somewhere, related to your reason for consulting?",
+        "Do you have severe itching in one or both eyes?"]
 
-        affected_region_options = ['0', 'internal cheek(L)', 'flank(L)', 'ankle(R)', 'thoracic spine', 'iliac fossa(L)', 'epigastric', 'nose',
-                                   'cervical spine', 'commissure(L)', 'thyroid cartilage', 'forehead', 'ankle(L)', 'side of the neck(R)', 'bottom lip(R)',
-                                   'penis', 'iliac fossa(R)', 'shoulder(R)', 'buttock(L)', 'cheek(L)', 'labia minora(R)', 'side of the neck(L)', 'belly',
-                                   'internal cheek(R)', 'palace', 'back of the neck', 'upper lip(R)', 'shoulder(L)', 'lumbar spine', 'posterior chest wall(R)',
-                                   'posterior chest wall(L)', 'flank(R)']
-        affected_region = st.selectbox("Where is the affected region located?", affected_region_options)
-
-        predict_10 = st.form_submit_button('predict_10')
+X_test_20 = X_test[most_important_20_features]
+X_test_20["What color is the rash?"] = int(convert_rash_color_to_value(X_test_20["What color is the rash?"]))
+X_test_20["Where is the swelling located?"] = int(convert_location_to_value(X_test_20["Where is the swelling located?"]))
+X_test_20["Where is the affected region located?"] = int(convert_affected_region_to_value(X_test_20["Where is the affected region located?"] ))
+st.dataframe(X_test_20)
