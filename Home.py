@@ -9,168 +9,63 @@ st.title('Predictive Diagnosis Assistant')
 
 # Load trained model
 model_top_20 = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
+model_49 = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_49.joblib')
 
 # Load test data
 test_df = pd.read_csv('data/subset_test.csv')
-st.write('Test Dataset')
-st.dataframe(test_df)
 
 # Preprocessing
-X_columns = [col for col in test_df.columns if col not in ['Unnamed: 0', 'PATHOLOGY']]
-X_test = test_df[X_columns]
-y_test = test_df['PATHOLOGY']
+test_df["What color is the rash?"] = test_df["What color is the rash?"].apply(lambda x: int(convert_rash_color_to_value(x)))
+test_df["Where is the swelling located?"] = test_df["Where is the swelling located?"].apply(lambda x: int(convert_location_to_value(x)))
+test_df["Where is the affected region located?"] = test_df["Where is the affected region located?"].apply(lambda x: int(convert_affected_region_to_value(x)))
+test_df["Do your lesions peel off?"] = test_df["Do your lesions peel off?"].apply(lambda x: int(convert_lesion_peel_off_to_value(x)))
+test_df["Is the lesion (or are the lesions) larger than 1cm?"] = test_df["Is the lesion (or are the lesions) larger than 1cm?"].apply(lambda x: int(convert_lesion_size_to_value(x)))
 
-most_important_102_features = ['Have you had sexual intercourse with an HIV-positive partner in the past 12 '
- 'months?',
- 'Do you have an active cancer?',
- 'Are you more irritable or has your mood been very unstable recently?',
- 'Do you have painful mouth ulcers or sores?',
- 'Are you currently being treated or have you recently been treated with an '
- 'oral antibiotic for an ear infection?',
- 'Have you been unable to move or get up for more than 3 consecutive days '
- 'within the last 4 weeks?',
- 'Do you have a known kidney problem resulting in an inability to retain '
- 'proteins?',
- 'Have you been in contact with or ate something that you have an allergy to?',
- 'Have you had chills or shivers?',
- 'Do you have a known severe food allergy?',
- 'Are you consulting because you have high blood pressure?',
- 'Did your cheeks suddenly turn red?',
- 'Have you been unintentionally losing weight or have you lost your appetite?',
- 'Are you taking any new oral anticoagulants ((NOACs)?',
- 'Have you had unprotected sex with more than one partner in the last 6 '
- 'months?',
- 'Have you ever had surgery to remove lymph nodes?',
- 'Have you noticed weakness in your facial muscles and/or eyes?',
- 'Have you had 2 or more asthma attacks in the past year?',
- 'Have you started or taken any antipsychotic medication within the last 7 '
- 'days?',
- 'Do you have family members who have had lung cancer?',
- 'Do you currently take hormones?',
- 'Do you feel like you are dying or were you afraid that you were about do '
- 'die?',
- 'Do you feel your abdomen is bloated or distended (swollen due to pressure '
- 'from inside)?',
- 'Do you have a burning sensation that starts in your stomach then goes up '
- 'into your throat, and can be associated with a bitter taste in your mouth?',
- 'Have any of your family members been diagnosed with cluster headaches?',
- 'Do your lesions peel off?',
- 'Do you have numbness, loss of sensation or tingling in the feet?',
- 'Have you been treated in hospital recently for nausea, agitation, '
- 'intoxication or aggressive behavior and received medication via an '
- 'intravenous or intramuscular route?',
- 'Do you consume energy drinks regularly?',
- 'Have you been able to pass stools or gas since your symptoms increased?',
- 'Do you feel your heart is beating very irregularly or in a disorganized '
- 'pattern?',
- 'Do you have any close family members who suffer from allergies (any type), '
- 'hay fever or eczema?',
- 'Have you had weakness or paralysis on one side of the face, which may still '
- 'be present or completely resolved?',
- 'Have you recently taken decongestants or other substances that may have '
- 'stimulant effects?',
- 'Is your nose or the back of your throat itchy?',
- 'Do you have the perception of seeing two images of a single object seen '
- 'overlapping or adjacent to each other (double vision)?',
- 'Did you have your first menstrual period before the age of 12?',
- 'Do you regularly drink coffee or tea?',
- 'Were you born prematurely or did you suffer any complication at birth?',
- 'Have you been diagnosed with hyperthyroidism?',
- 'Do you have cystic fibrosis?',
- 'Have you vomited several times or have you made several efforts to vomit?',
- 'Have you had one or several flare ups of chronic obstructive pulmonary '
- 'disease (COPD) in the past year?',
- 'Do you have a problem with poor circulation?',
- 'Have you ever had a spontaneous pneumothorax?',
- 'Do you have severe itching in one or both eyes?',
- 'Do you find that your symptoms have worsened over the last 2 weeks and that '
- 'progressively less effort is required to cause the symptoms?',
- 'Have you ever had a diagnosis of anemia?',
- 'Do you suffer from chronic anxiety?',
- 'Do you work in agriculture?',
- 'Do you take medication that dilates your blood vessels?',
- 'Do you have a known heart defect?',
- 'Do you feel out of breath with minimal physical effort?',
- 'Have you been diagnosed with chronic sinusitis?',
- 'Do you have pain that improves when you lean forward?',
- 'Do you have Rheumatoid Arthritis?',
- 'Have you had diarrhea or an increase in stool frequency?',
- 'Have you or any member of your family ever had croup?',
- 'Have you noticed that you produce more saliva than usual?',
- 'Have you ever had fluid in your lungs?',
- 'Have you ever had a pericarditis?',
- 'Did you vomit after coughing?',
- 'Do you have pain that is increased with movement?',
- 'Do you have a sore throat?',
- 'Have you ever had a sexually transmitted infection?',
- 'Do you have symptoms that get worse after eating?',
- 'Do you have chronic kidney failure?',
- 'Are you infected with the human immunodeficiency virus (HIV)?',
- 'Do you have annoying muscle spasms in your face, neck or any other part of '
- 'your body?',
- 'Have you ever been diagnosed with obstructive sleep apnea (OSA)?',
- 'Do you work in the mining sector?',
- 'Have you been in contact with a person with similar symptoms in the past 2 '
- 'weeks?',
- 'Do you have liver cirrhosis?',
- 'Are your symptoms more prominent at night?',
- 'Are the symptoms or pain increased with coughing, with an effort like '
- 'lifting a weight or from forcing a bowel movement?',
- 'Do you have any lesions, redness or problems on your skin that you believe '
- 'are related to the condition you are consulting for?',
- 'Have you noticed that the tone of your voice has become deeper, softer or '
- 'hoarse?',
- 'Do you have difficulty articulating words/speaking?',
- 'In the last month, have you been in contact with anyone infected with the '
- 'Ebola virus?',
- 'Do you take a calcium channel blockers (medication)?',
- 'Is the lesion (or are the lesions) larger than 1cm?',
- 'Are you currently using intravenous drugs?',
- 'Are you immunosuppressed?',
- 'Have any of your family members ever had a pneumothorax?',
- 'Do you feel that your eyes produce excessive tears?',
- 'Does the person have a whooping cough?',
- 'Do you feel so tired that you are unable to do your usual activities or are '
- 'you stuck in your bed all day long?',
- 'What color is the rash?',
- 'Do you have pain or weakness in your jaw?',
- 'Have you ever been diagnosed with depression?',
- 'Where is the swelling located?',
- 'Have you been hospitalized for an asthma attack in the past year?',
- 'Do you have polyps in your nose?',
- 'Do you suffer from Crohn’s disease or ulcerative colitis (UC)?',
- 'Do you work in construction?',
- 'Do you have pain somewhere, related to your reason for consulting?',
- 'Do you have chest pain even at rest?',
- 'Do you currently undergo dialysis?',
- 'Do you have a poor diet?',
- 'Are your vaccinations up to date?',
- 'Are you exposed to secondhand cigarette smoke on a daily basis?',
- 'Do you have a decrease in appetite?']
+# Define session state for pagination
+if 'page_index' not in st.session_state:
+    st.session_state.page_index = 0
 
-most_important_20_features = ["Do you have swollen or painful lymph nodes?" ,
-        "Have you had sexual intercourse with an HIV-positive partner in the past 12 months?",
-        "Are you taking any new oral anticoagulants ((NOACs)?",
-        "Have you had unprotected sex with more than one partner in the last 6 months?",
-        "Is your nose or the back of your throat itchy?",
-        "Are you immunosuppressed?",
-        "Have you had surgery within the last month?",
-        "Do you have a chronic obstructive pulmonary disease (COPD)?",
-        "Do you regularly take stimulant drugs?",
-        "Are you exposed to secondhand cigarette smoke on a daily basis?",
-        "Do you have heart failure?",
-        "What color is the rash?",
-        "Have you ever had a diagnosis of anemia?",
-        "Where is the swelling located?",
-        "Have you ever had a sexually transmitted infection?",
-        "Where is the affected region located?",
-        "Do you have any lesions, redness or problems on your skin that you believe are related to the condition you are consulting for?",
-        "Have you started or taken any antipsychotic medication within the last 7 days?",
-        "Do you have pain somewhere, related to your reason for consulting?",
-        "Do you have severe itching in one or both eyes?"]
+# Number of rows per page
+rows_per_page = 20
 
-X_test_20 = X_test[most_important_20_features]
-X_test_20["What color is the rash?"] = int(convert_rash_color_to_value(X_test_20["What color is the rash?"]))
-X_test_20["Where is the swelling located?"] = int(convert_location_to_value(X_test_20["Where is the swelling located?"]))
-X_test_20["Where is the affected region located?"] = int(convert_affected_region_to_value(X_test_20["Where is the affected region located?"] ))
-st.dataframe(X_test_20)
+
+# Function to process a subset of DataFrame
+def process_data(df_subset):
+    results = {
+        'Patient ID': [],
+        'Age': [],
+        'Gender': [],
+        'Pathology': [],
+        '20 MIF Predictions': [],
+        '102 MIF Predictions': []
+    }
+
+    for index, row in df_subset.iterrows():
+        results['Patient ID'].append(index)
+        results['Age'].append(row['AGE'])
+        results['Gender'].append(row['SEX'])
+        results['Pathology'].append(row['PATHOLOGY'])
+        results['20 MIF Predictions'].append(get_20_mif_prediction(model_top_20, row))
+        results['102 MIF Predictions'].append(get_102_mif_prediction(model_49, row))
+
+    return pd.DataFrame(results)
+
+
+# Display current page and process data for that page
+start_row = st.session_state.page_index * rows_per_page
+end_row = start_row + rows_per_page
+current_page_df = test_df.iloc[start_row:end_row]
+current_page_results_df = process_data(current_page_df)
+st.dataframe(current_page_results_df)
+
+# Pagination buttons
+col1, col2, col3, col4 = st.columns(4)
+with col2:
+    if st.button('Previous'):
+        if st.session_state.page_index > 0:
+            st.session_state.page_index -= 1
+
+with col4:
+    if st.button('Next'):
+        if st.session_state.page_index < len(test_df) // rows_per_page:
+            st.session_state.page_index += 1

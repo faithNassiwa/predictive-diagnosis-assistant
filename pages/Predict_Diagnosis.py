@@ -1,65 +1,75 @@
 import streamlit as st
+import joblib
+import pandas as pd
+import numpy as np
+from xgboost import XGBClassifier
+from utils import *
 
 st.title('Predictive Diagnosis Assistant')
 
-with st.container():
-    st.subheader('Health History and Conditions')
-    col1, col2 = st.columns(2)
-    with col1:
-        hiv_contact = st.radio('Have you had sexual intercourse with an HIV-positive partner in '
-                                                    'the past 12 months?', options=['Yes', 'No'], index=1, horizontal=True)
-        cancer = st.radio("Do you have an active cancer?", ['Yes', 'No'], index=1, horizontal=True)
-        mood_changes = st.radio("Are you more irritable or has your mood been very unstable recently?", ['Yes', 'No'],
-                                index=1, horizontal=True)
-        mouth_ulcers = st.radio("Do you have painful mouth ulcers or sores?", ['Yes', 'No'], index=1, horizontal=True)
-    with col2:
-        ear_infection = st.radio(
-            "Are you currently being treated or have you recently been treated with an oral antibiotic for an ear infection?",
-            ['Yes', 'No'], index=1, horizontal=True)
-        immobility = st.radio(
-            "Have you been unable to move or get up for more than 3 consecutive days within the last 4 weeks?",
-            ['Yes', 'No'], index=1, horizontal=True)
-        kidney_problem = st.radio("Do you have a known kidney problem resulting in an inability to retain proteins?",
-                                  ['Yes', 'No'], index=1, horizontal=True)
-        allergy_contact = st.radio("Have you been in contact with or ate something that you have an allergy to?",
-                                   ['Yes', 'No'], index=1, horizontal=True)
+# Load trained model
+model_top_20 = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
+model_49 = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_49.joblib')
 
-    st.subheader('Lifestyle and Environmental Factors')
-    col3, col4 = st.columns(2)
-    with col3:
-        unprotected_sex = st.radio("Have you had unprotected sex with more than one partner in the last 6 months?",
-                                   ['Yes', 'No'], index=1, horizontal=True)
-        lung_cancer_family = st.radio("Do you have family members who have had lung cancer?", ['Yes', 'No'],
-                                      index=1, horizontal=True)
-        high_blood_pressure = st.radio("Are you consulting because you have high blood pressure?", ['Yes', 'No'],
-                                       index=1, horizontal=True)
-        agriculture_work = st.radio("Do you work in agriculture?", ['Yes', 'No'], index=1, horizontal=True)
+# Load test data
+test_df = pd.read_csv('data/subset_test.csv')
 
-    with col4:
-        energy_drinks = st.radio("Do you consume energy drinks regularly?", ['Yes', 'No'], index=1, horizontal=True)
-        mining_work = st.radio("Do you work in the mining sector?", ['Yes', 'No'], index=1, horizontal=True)
-        construction_work = st.radio("Do you work in construction?", ['Yes', 'No'], index=1, horizontal=True)
-        secondhand_smoke = st.radio("Are you exposed to secondhand cigarette smoke on a daily basis?",
-                                    ['Yes', 'No'], index=1, horizontal=True)
+# Preprocessing
+test_df["What color is the rash?"] = test_df["What color is the rash?"].apply(lambda x: int(convert_rash_color_to_value(x)))
+test_df["Where is the swelling located?"] = test_df["Where is the swelling located?"].apply(lambda x: int(convert_location_to_value(x)))
+test_df["Where is the affected region located?"] = test_df["Where is the affected region located?"].apply(lambda x: int(convert_affected_region_to_value(x)))
+test_df["Do your lesions peel off?"] = test_df["Do your lesions peel off?"].apply(lambda x: int(convert_lesion_peel_off_to_value(x)))
+test_df["Is the lesion (or are the lesions) larger than 1cm?"] = test_df["Is the lesion (or are the lesions) larger than 1cm?"].apply(lambda x: int(convert_lesion_size_to_value(x)))
 
-    st.subheader('Symptoms and Recent Changes')
-    col5, col6 = st.columns(2)
-    with col5:
-        chills = st.radio("Have you had chills or shivers?", ['Yes', 'No'], index=1, horizontal=True)
-        red_cheeks = st.radio("Did your cheeks suddenly turn red?", ['Yes', 'No'], index=1, horizontal=True)
-        weight_loss = st.radio("Have you been unintentionally losing weight or have you lost your appetite?",
-                               ['Yes', 'No'], index=1, horizontal=True)
-        asthma_attacks = st.radio("Have you had 2 or more asthma attacks in the past year?", ['Yes', 'No'], index=1,
-                                  horizontal=True)
-    with col6:
-        facial_weakness = st.radio("Have you noticed weakness in your facial muscles and/or eyes?", ['Yes', 'No'],
-                                   index=1, horizontal=True)
-        bloated_abdomen = st.radio(
-            "Do you feel your abdomen is bloated or distended (swollen due to pressure from inside)?", ['Yes', 'No'],
-            index=1, horizontal=True)
-        double_vision = st.radio(
-            "Do you have the perception of seeing two images of a single object seen overlapping or adjacent to each other (double vision)?",
-            ['Yes', 'No'], index=1, horizontal=True)
-        sore_throat = st.radio("Do you have a sore throat?", ['Yes', 'No'], index=1, horizontal=True)
+# Initialize the results dictionary with empty lists for each key
+results = {
+    'Patient ID': [],
+    'Age': [],
+    'Gender': [],
+    'Pathology': [],
+    '20 MIF Predictions': [],
+    '102 MIF Predictions': []
+}
 
+# Populate dictionary with Patient details, Prognosis and Model Predictions
+for index, row in test_df.iterrows():
+    results['Patient ID'].append(index)
+    results['Age'].append(row['AGE'])
+    results['Gender'].append(row['SEX'])
+    results['Pathology'].append(row['PATHOLOGY'])
+    results['20 MIF Predictions'].append(get_20_mif_prediction(model_top_20, row))
+    results['102 MIF Predictions'].append(get_102_mif_prediction(model_49, row))
+
+# Create a DataFrame from the results dictionary
+results_df = pd.DataFrame(results)
+
+# Define session state for pagination
+if 'page_index' not in st.session_state:
+    st.session_state.page_index = 0
+
+# Define the number of rows per page
+rows_per_page = 20
+
+
+# Function to display the current page of the DataFrame
+def display_page(df, page_index, rows_per_page):
+    start_row = page_index * rows_per_page
+    end_row = start_row + rows_per_page
+    return df.iloc[start_row:end_row]
+
+
+# Display the DataFrame for the current page
+st.dataframe(display_page(results_df, st.session_state.page_index, rows_per_page))
+
+# Pagination buttons
+col1, col2 = st.columns(2)
+with col1:
+    if st.button('Previous'):
+        if st.session_state.page_index > 0:
+            st.session_state.page_index -= 1
+
+with col2:
+    if st.button('Next'):
+        if st.session_state.page_index < len(results_df) // rows_per_page:
+            st.session_state.page_index += 1
 
