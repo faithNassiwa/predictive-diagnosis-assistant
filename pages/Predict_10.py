@@ -7,7 +7,11 @@ import os
 
 st.title('Predictive Diagnosis Assistant')
 # Load trained model
+<<<<<<< HEAD
 model = joblib.load(os.path.abspath('trained_models/xgboost_10.joblib'))
+=======
+model = joblib.load('/Users/kelly/Desktop/DS5500/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
+>>>>>>> 0786616 (102 features)
 
 
 def medical_questionnaire():

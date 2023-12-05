@@ -9,8 +9,12 @@ import os
 st.title('Predictive Diagnosis Assistant')
 
 # Load trained model
+<<<<<<< HEAD
 model_top_20 = joblib.load(os.path.abspath('trained_models/xgboost_10.joblib'))
 model_49 = joblib.load(os.path.abspath('trained_models/xgboost_49.joblib'))
+=======
+model_top_20 = joblib.load('/Users/kelly/Desktop/DS5500/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
+>>>>>>> 0786616 (102 features)
 
 # Load test data
 test_df = pd.read_csv('data/subset_test.csv')
