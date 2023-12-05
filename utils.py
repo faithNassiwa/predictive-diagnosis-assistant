@@ -257,7 +257,7 @@ def process_responses_20(swollen_lymph_nodes, hiv_intercourse, taking_noacs, chr
     features = pd.DataFrame(data, index=[0])
     return features
 
-<<<<<<< HEAD
+
 
 def convert_lesion_peel_off_to_value(peel_off):
     peel_off_to_value = {
@@ -343,7 +343,7 @@ def get_102_mif_prediction(model, row):
 
     return ', '.join(f"{key}: {value}" for key, value in top3_diseases_prob.items())
 
-=======
+
 def process_responses_49(hiv_exposure,active_cancer,ulcers_sores, ear_infection,
                         mobility, inability_retain_protein, allergy_exposure, chills_shivers, food_allergy,
                         high_blood_pressure,red_cheeks,weight_loss,NOACs, unprotected_sex,lymph_nodes, facial_muscles,
@@ -469,4 +469,4 @@ def process_responses_49(hiv_exposure,active_cancer,ulcers_sores, ear_infection,
 
     all_features = pd.DataFrame(df, index=[0])
     return all_features
->>>>>>> 0786616 (102 features)
+

@@ -7,9 +7,9 @@ from utils import *
 st.title('Predictive Diagnosis Assistant')
 
 # Load trained model
-<<<<<<< HEAD
+
 model = joblib.load('replace with your path/predictive-diagnosis-assistant/trained_models/xgboost_49.joblib')
-=======
+
 model = joblib.load('/Users/kelly/Desktop/DS5500/predictive-diagnosis-assistant/trained_models/xgboost_49.joblib')
 
 def medical_questionnaire():
@@ -199,5 +199,4 @@ def medical_questionnaire():
                 st.write(f"- {key}: `{value * 100:.2f}`%")
 
 medical_questionnaire()
->>>>>>> 0786616 (102 features)
 
