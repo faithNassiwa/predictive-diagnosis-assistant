@@ -258,7 +258,6 @@ def process_responses_20(swollen_lymph_nodes, hiv_intercourse, taking_noacs, chr
     return features
 
 
-
 def convert_lesion_peel_off_to_value(peel_off):
     peel_off_to_value = {
         '0': 0,
@@ -379,6 +378,7 @@ def process_responses_49(hiv_exposure,active_cancer,ulcers_sores, ear_infection,
         'Have you noticed weakness in your facial muscles and/or eyes?':int(boolean_format(facial_muscles)),
         'Have you had 2 or more asthma attacks in the past year?':int(boolean_format(asthma_attacks)),
         'Have you started or taken any antipsychotic medication within the last 7 days?':int(boolean_format(antipsychotic_medication)),
+        'Do you have heart failure?': int(boolean_format(heart_failure)),
         'Do you have family members who have had lung cancer?':int(boolean_format(lung_cancer)),
         'Do you currently take hormones?':int(boolean_format(hormones_intake)),
         'Do you feel like you are dying or were you afraid that you were about do die?':int(boolean_format(death_feeling)),
@@ -464,9 +464,7 @@ def process_responses_49(hiv_exposure,active_cancer,ulcers_sores, ear_infection,
         "Where is the swelling located?": int(convert_location_to_value(swelling_location)),
         "Where is the affected region located?": int(convert_affected_region_to_value(affected_region))
 
-
     }
-
     all_features = pd.DataFrame(df, index=[0])
     return all_features
 

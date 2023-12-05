@@ -3,14 +3,13 @@ import joblib
 import numpy as np
 from xgboost import XGBClassifier
 from utils import *
+import os
 
 st.title('Predictive Diagnosis Assistant')
 
 # Load trained model
+model = joblib.load(os.path.abspath('trained_models/xgboost_49.joblib'))
 
-model = joblib.load('replace with your path/predictive-diagnosis-assistant/trained_models/xgboost_49.joblib')
-
-model = joblib.load('/Users/kelly/Desktop/DS5500/predictive-diagnosis-assistant/trained_models/xgboost_49.joblib')
 
 def medical_questionnaire():
     with (st.form("medical_questionnaire")):
@@ -35,7 +34,6 @@ def medical_questionnaire():
         antipsychotic_medication = st.radio("Have you started or taken any antipsychotic medication within the last 7 days?", ['Yes', 'No'], index=1)
         heart_failure = st.radio("Do you have heart failure?", ['Yes', 'No'], index=1)
         lung_cancer = st.radio("Do you have family members who have had lung cancer?", ['Yes', 'No'], index=1)
-
         death_feeling = st.radio("Do you feel like you are dying or were you afraid that you were about to die?", ['Yes', 'No'], index=1)
         bloated_swollen_abdomen = st.radio("Do you feel your abdomen is bloated or distended (swollen due to pressure from inside)?", ['Yes', 'No'], index=1)
         burning_sensation_in_stomach = st.radio("Do you have a burning sensation that starts in your stomach then goes up into your throat, and can be associated with a bitter taste in your mouth?", ['Yes', 'No'], index=1)
@@ -73,7 +71,6 @@ def medical_questionnaire():
         intravenous_drug_use = st.radio("Are you currently using intravenous drugs?", ['Yes', 'No'], index=1)
         pneumothorax = st.radio("Have any of your family members ever had a pneumothorax?", ['Yes', 'No'], index=1)
         excessive_tears = st.radio("Do you feel that your eyes produce excessive tears?", ['Yes', 'No'], index=1)
-
         whooping_cough = st.radio("Does the person have a whooping cough?", ['Yes', 'No'], index=1)
         tiredness = st.radio("Do you feel so tired that you are unable to do your usual activities or are you stuck in your bed all day long?", ['Yes', 'No'], index=1)
         jaw_weakness = st.radio("Do you have pain or weakness in your jaw?", ['Yes', 'No'], index=1)
@@ -107,26 +104,6 @@ def medical_questionnaire():
         construction = st.radio("Do you work in construction?", ['Yes', 'No'], index=1)
         decrease_appetite = st.radio("Do you have a decrease in appetite?", ['Yes', 'No'], index=1)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         # Lifestyle and Environmental Factors
         st.subheader("Lifestyle and Environmental Factors")
 
@@ -139,8 +116,7 @@ def medical_questionnaire():
         agriculture = st.radio("Do you work in agriculture?", ['Yes', 'No'], index=1)
         mining_sector = st.radio("Do you work in the mining sector?", ['Yes', 'No'], index=1)
         hormones_intake = st.radio("'Do you currently take hormones?",['Yes', 'No'], index=1 )
-
-
+        out_of_breath = st.radio("Do you feel out of breath with minimal physical effort?", ['Yes', 'No'], index=1 )
 
         # Multiple Choice Questions
         st.subheader("Additional Details")
@@ -157,27 +133,26 @@ def medical_questionnaire():
                                    'posterior chest wall(L)', 'flank(R)']
         affected_region = st.selectbox("Where is the affected region located?", affected_region_options)
 
-
-
         predict_49 = st.form_submit_button('Predict 49')
-
         if predict_49:
             # Process responses
             responses = process_responses_49(hiv_exposure,active_cancer,ulcers_sores, ear_infection,
-                                             mobility, inability_retain_protein, allergy_exposure, chills_shivers, food_allergy,
-                                             high_blood_pressure,red_cheeks,weight_loss,NOACs, unprotected_sex,lymph_nodes, facial_muscles,
-                                             asthma_attacks, antipsychotic_medication,heart_failure,lung_cancer, death_feeling,
-                                             bloated_swollen_abdomen, burning_sensation_in_stomach, cluster_headaches,lesions_peel,
-                                             sensation_in_feet,anemia,intravenous_intramuscular_route, irregular_heartbeat,  face_paralysis,
-                                             nose_throat_itchy, sight_problems,itchy_eyes,chronic_anxiety, menstrual_period, premature_birth, hyperthyroidism,
-                                             cystic_fibrosis,vomit, sore_throat,poor_circulation, sti_exposure, symptoms_after_eating,chronic_kidney_failure,
-                                             hiv,gas_ability,pain_increase_movement, muscle_spams, blood_vessels, OSA,similar_symptoms,family_allergies,liver_cirrhosis,symptoms_at_night,
-                                             symptoms_progression,construction,immunosuppressed,decrease_appetite,croup,lesions_redness,voice_tone,difficulty_speaking,ebola_exposure,
-                                             calcium_blockers_medication,lesions_1cm,intravenous_drug_use,pneumothorax,excessive_tears,whooping_cough,
-                                             tiredness,jaw_weakness,vomit_after_coughing, pericarditis, saliva_production, depression,recent_asthma,nose_polyps,crohns_disease,pain_location,
-                                             chest_pain,fluid_in_lungs, dialysis,foreward_movement,out_of_breath,chronic_sinusitis, vaccinations,heart_defect, mood_stability,energy_drinks_consumption,
-                                             coffee_tea_consumption,diarrhea_stool_frequency,Rheumatoid_Arthritis,cigarette_smoke_exposure,poor_diet,decongestants,agriculture,mining_sector,hormones_intake,
-                                             rash_color,swelling_location,affected_region)
+                        mobility, inability_retain_protein, allergy_exposure, chills_shivers, food_allergy,
+                        high_blood_pressure,red_cheeks,weight_loss,NOACs, unprotected_sex,lymph_nodes, facial_muscles,
+                        asthma_attacks, antipsychotic_medication,heart_failure,lung_cancer, death_feeling,
+                        bloated_swollen_abdomen, burning_sensation_in_stomach, cluster_headaches,lesions_peel,
+                        sensation_in_feet,intravenous_intramuscular_route, irregular_heartbeat,  face_paralysis,
+                        nose_throat_itchy, sight_problems, menstrual_period,copd, premature_birth, hyperthyroidism,
+                        cystic_fibrosis,vomit,anemia, sore_throat,poor_circulation, family_allergies, sti_exposure, symptoms_after_eating,chronic_kidney_failure,
+                        hiv,muscle_spams,itchy_eyes, OSA,similar_symptoms,liver_cirrhosis,symptoms_at_night,
+                        symptoms_progression,immunosuppressed, pericarditis,decrease_appetite,blood_vessels, lesions_redness,voice_tone,difficulty_speaking,ebola_exposure,
+                        calcium_blockers_medication,croup,construction,lesions_1cm,chronic_anxiety, intravenous_drug_use,pneumothorax,excessive_tears,whooping_cough,
+                        tiredness,pain_increase_movement,jaw_weakness,depression,out_of_breath,chronic_sinusitis,foreward_movement, recent_asthma,heart_defect, nose_polyps,crohns_disease,pain_location,
+                        chest_pain,dialysis,gas_ability,fluid_in_lungs, vomit_after_coughing, vaccinations,saliva_production,mood_stability,energy_drinks_consumption,
+                        coffee_tea_consumption,diarrhea_stool_frequency,Rheumatoid_Arthritis,cigarette_smoke_exposure,poor_diet,decongestants,agriculture,mining_sector,hormones_intake,
+                         rash_color, swelling_location,affected_region)
+
+
 
             # Generate prediction
             prediction = model.predict(responses)
@@ -197,6 +172,7 @@ def medical_questionnaire():
             st.write(f"**Top 3 Possible Diagnoses:**")
             for key, value in top3_diseases_prob.items():
                 st.write(f"- {key}: `{value * 100:.2f}`%")
+
 
 medical_questionnaire()
 

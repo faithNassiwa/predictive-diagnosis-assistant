@@ -4,12 +4,13 @@ import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
 from utils import *
+import os
 
 st.title('Predictive Diagnosis Assistant')
 
 # Load trained model
-model_top_20 = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
-model_49 = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_49.joblib')
+model_top_20 = joblib.load(os.path.abspath('trained_models/xgboost_10.joblib'))
+model_49 = joblib.load(os.path.abspath('trained_models/xgboost_49.joblib'))
 
 # Load test data
 test_df = pd.read_csv('data/subset_test.csv')

@@ -10,9 +10,6 @@ st.title('Predictive Diagnosis Assistant')
 
 model = joblib.load(os.path.abspath('trained_models/xgboost_10.joblib'))
 
-model = joblib.load('/Users/kelly/Desktop/DS5500/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
-
-
 
 def medical_questionnaire():
     with st.form("medical_questionnaire"):
