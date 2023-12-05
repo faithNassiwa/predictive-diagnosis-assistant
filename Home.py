@@ -4,12 +4,13 @@ import pandas as pd
 import numpy as np
 from xgboost import XGBClassifier
 from utils import *
+import os
 
 st.title('Predictive Diagnosis Assistant')
 
 # Load trained model
-model_top_20 = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
-model_49 = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_49.joblib')
+model_top_20 = joblib.load(os.path.abspath('trained_models/xgboost_10.joblib'))
+model_49 = joblib.load(os.path.abspath('trained_models/xgboost_49.joblib'))
 
 # Load test data
 test_df = pd.read_csv('data/subset_test.csv')
@@ -57,15 +58,25 @@ end_row = start_row + rows_per_page
 current_page_df = test_df.iloc[start_row:end_row]
 current_page_results_df = process_data(current_page_df)
 st.dataframe(current_page_results_df)
+# Convert DataFrame to HTML without the index
+#html = current_page_results_df.to_html(index=False)
+# Display the DataFrame in Streamlit without the index
+#st.write(html, unsafe_allow_html=True)
+st.write('')
 
 # Pagination buttons
 col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.empty()
 with col2:
     if st.button('Previous'):
         if st.session_state.page_index > 0:
             st.session_state.page_index -= 1
-
+with col3:
+    st.empty()
 with col4:
     if st.button('Next'):
         if st.session_state.page_index < len(test_df) // rows_per_page:
             st.session_state.page_index += 1
+
+st.write('MIF > Most Important Features/Symptoms')

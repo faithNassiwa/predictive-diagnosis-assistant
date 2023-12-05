@@ -21,55 +21,106 @@ test_df["Where is the affected region located?"] = test_df["Where is the affecte
 test_df["Do your lesions peel off?"] = test_df["Do your lesions peel off?"].apply(lambda x: int(convert_lesion_peel_off_to_value(x)))
 test_df["Is the lesion (or are the lesions) larger than 1cm?"] = test_df["Is the lesion (or are the lesions) larger than 1cm?"].apply(lambda x: int(convert_lesion_size_to_value(x)))
 
-# Initialize the results dictionary with empty lists for each key
-results = {
-    'Patient ID': [],
-    'Age': [],
-    'Gender': [],
-    'Pathology': [],
-    '20 MIF Predictions': [],
-    '102 MIF Predictions': []
-}
 
-# Populate dictionary with Patient details, Prognosis and Model Predictions
-for index, row in test_df.iterrows():
-    results['Patient ID'].append(index)
-    results['Age'].append(row['AGE'])
-    results['Gender'].append(row['SEX'])
-    results['Pathology'].append(row['PATHOLOGY'])
-    results['20 MIF Predictions'].append(get_20_mif_prediction(model_top_20, row))
-    results['102 MIF Predictions'].append(get_102_mif_prediction(model_49, row))
+def medical_questionnaire():
+    with st.form("medical_questionnaire"):
+        # Medical History
+        st.subheader("Medical History")
+        swollen_lymph_nodes = st.radio("Do you have swollen or painful lymph nodes?", ['Yes', 'No'], index=1)
+        hiv_intercourse = st.radio("Have you had sexual intercourse with an HIV-positive partner in the past 12 months?", ['Yes', 'No'], index=1)
+        taking_noacs = st.radio("Are you taking any new oral anticoagulants (NOACs)?", ['Yes', 'No'], index=1)
+        chronic_copd = st.radio("Do you have a chronic obstructive pulmonary disease (COPD)?", ['Yes', 'No'], index=1)
+        heart_failure = st.radio("Do you have heart failure?", ['Yes', 'No'], index=1)
+        diagnosis_of_anemia = st.radio("Have you ever had a diagnosis of anemia?", ['Yes', 'No'], index=1)
+        had_sti = st.radio("Have you ever had a sexually transmitted infection?", ['Yes', 'No'], index=1)
+        skin_issues = st.radio("Do you have any lesions, redness or problems on your skin that you believe are related to the condition you are consulting for?", ['Yes', 'No'], index=1)
+        taken_antipsychotics = st.radio("Have you started or taken any antipsychotic medication within the last 7 days?", ['Yes', 'No'], index=1)
 
-# Create a DataFrame from the results dictionary
-results_df = pd.DataFrame(results)
+        # Lifestyle and Environmental Factors
+        st.subheader("Lifestyle and Environmental Factors")
+        unprotected_sex = st.radio("Have you had unprotected sex with more than one partner in the last 6 months?", ['Yes', 'No'], index=1)
+        itchy_nose_throat = st.radio("Is your nose or the back of your throat itchy?", ['Yes', 'No'], index=1)
+        recent_surgery = st.radio("Have you had surgery within the last month?", ['Yes', 'No'], index=1)
+        take_stimulant_drugs = st.radio("Do you regularly take stimulant drugs?", ['Yes', 'No'], index=1)
+        exposed_to_smoke = st.radio("Are you exposed to secondhand cigarette smoke on a daily basis?", ['Yes', 'No'], index=1)
 
-# Define session state for pagination
-if 'page_index' not in st.session_state:
-    st.session_state.page_index = 0
+        # Social History
+        st.subheader("Social History")
+        immunosuppressed = st.radio("Are you immunosuppressed?", ['Yes', 'No'], index=1)
+        pain_related = st.radio("Do you have pain somewhere, related to your reason for consulting?", ['Yes', 'No'], index=1)
+        severe_eye_itching = st.radio("Do you have severe itching in one or both eyes?", ['Yes', 'No'], index=1)
 
-# Define the number of rows per page
-rows_per_page = 20
+        # Multiple Choice Questions
+        st.subheader("Additional Details")
+        rash_color_options = ['0', 'pale', 'pink', 'yellow', 'red']
+        rash_color = st.selectbox("What color is the rash?", rash_color_options)
+
+        swelling_location_options = ['0', 'cheek(L)', 'tibia(L)', 'nowhere', 'dorsal aspect of the foot(R)', 'nose', 'calf(R)', 'dorsal aspect of the foot(L)', 'calf(L)', 'sole(L)', 'posterior aspect of the ankle(L)', 'sole(R)', 'tibia(R)', 'cheek(R)', 'posterior aspect of the ankle(R)', 'ankle(L)', 'forehead', 'thigh(R)', 'ankle(R)', 'thigh(L)', 'toe (1)(R)', 'toe (1)(L)', 'toe (2)(R)']
+        swelling_location = st.selectbox("Where is the swelling located?", swelling_location_options)
+
+        affected_region_options = ['0', 'internal cheek(L)', 'flank(L)', 'ankle(R)', 'thoracic spine', 'iliac fossa(L)', 'epigastric', 'nose',
+                                   'cervical spine', 'commissure(L)', 'thyroid cartilage', 'forehead', 'ankle(L)', 'side of the neck(R)', 'bottom lip(R)',
+                                   'penis', 'iliac fossa(R)', 'shoulder(R)', 'buttock(L)', 'cheek(L)', 'labia minora(R)', 'side of the neck(L)', 'belly',
+                                   'internal cheek(R)', 'palace', 'back of the neck', 'upper lip(R)', 'shoulder(L)', 'lumbar spine', 'posterior chest wall(R)',
+                                   'posterior chest wall(L)', 'flank(R)']
+        affected_region = st.selectbox("Where is the affected region located?", affected_region_options)
+
+        predict_10 = st.form_submit_button('Predict 10')
+
+        top3_diseases_prob = {}
+        if predict_10:
+            # Process responses
+            responses = process_responses_20(swollen_lymph_nodes, hiv_intercourse, taking_noacs, chronic_copd, heart_failure,
+                      diagnosis_of_anemia, had_sti, skin_issues, taken_antipsychotics, unprotected_sex,
+                      itchy_nose_throat, recent_surgery, take_stimulant_drugs, exposed_to_smoke, immunosuppressed,
+                      pain_related, severe_eye_itching,rash_color, swelling_location, affected_region)
+
+            # Generate prediction
+            prediction = model_top_20.predict(responses)
+
+            # Display the prediction
+            st.write(f"**Predicted Diagonsis:** {convert_number_to_disease(prediction[0])}")
+
+            # Class probability
+            pred_class_prob = model_top_20.predict_proba(responses)
+            top_3_disease = np.argsort(-pred_class_prob, axis=1)[:, :3]
+            # Extract the probabilities at these indices
+            for indices in top_3_disease:
+                for i in indices:
+                    top3_diseases_prob[convert_number_to_disease(i)] = pred_class_prob[0][i]
+
+        if max(list(top3_diseases_prob.values())) > 0.89:
+            st.write(f"**Top 3 Possible Diagnoses:**")
+            for key, value in top3_diseases_prob.items() :
+                st.write(f"- {key}: `{value*100:.2f}`%")
+        else:
+
+            st.subheader("Other Questions")
+            predict_49 = st.form_submit_button('Predict 49')
+            if predict_49:
+                # Process responses
+                responses = process_responses_20(swollen_lymph_nodes, hiv_intercourse, taking_noacs, chronic_copd,
+                                                 heart_failure,
+                                                 diagnosis_of_anemia, had_sti, skin_issues, taken_antipsychotics,
+                                                 unprotected_sex,
+                                                 itchy_nose_throat, recent_surgery, take_stimulant_drugs,
+                                                 exposed_to_smoke, immunosuppressed,
+                                                 pain_related, severe_eye_itching, rash_color, swelling_location,
+                                                 affected_region)
+
+                # Generate prediction
+                prediction = model_top_20.predict(responses)
+
+                # Display the prediction
+                st.write(f"**Predicted Diagonsis:** {convert_number_to_disease(prediction[0])}")
+
+                # Class probability
+                pred_class_prob = model_top_20.predict_proba(responses)
+                top_3_disease = np.argsort(-pred_class_prob, axis=1)[:, :3]
+                # Extract the probabilities at these indices
+                for indices in top_3_disease:
+                    for i in indices:
+                        top3_diseases_prob[convert_number_to_disease(i)] = pred_class_prob[0][i]
 
 
-# Function to display the current page of the DataFrame
-def display_page(df, page_index, rows_per_page):
-    start_row = page_index * rows_per_page
-    end_row = start_row + rows_per_page
-    return df.iloc[start_row:end_row]
-
-
-# Display the DataFrame for the current page
-st.dataframe(display_page(results_df, st.session_state.page_index, rows_per_page))
-
-# Pagination buttons
-col1, col2 = st.columns(2)
-with col1:
-    if st.button('Previous'):
-        if st.session_state.page_index > 0:
-            st.session_state.page_index -= 1
-
-with col2:
-    if st.button('Next'):
-        if st.session_state.page_index < len(results_df) // rows_per_page:
-            st.session_state.page_index += 1
-
+medical_questionnaire()

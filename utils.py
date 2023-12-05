@@ -151,6 +151,7 @@ most_important_20_features = ["Do you have swollen or painful lymph nodes?" ,
         "Do you have severe itching in one or both eyes?"]
 
 
+
 # disease mapping
 mapping_dict = {1: 0, 6: 1, 7: 2, 8: 3, 13: 4, 23: 5, 27: 6, 36: 7, 44: 8, 46: 9}
 disease_dict = {44: 'URTI', 46: 'Viral pharyngitis', 8: 'Anemia', 23: 'HIV (initial infection)', 27: 'Localized edema', 7: 'Anaphylaxis', 36: 'Pulmonary embolism', 13: 'Influenza', 6: 'Bronchitis', 1: 'Allergic sinusitis'}
@@ -306,19 +307,25 @@ def convert_48_diseases(index):
 def get_20_mif_prediction(model, row):
     data = {most_important_20_features[i]: row[most_important_20_features[i]] for i in range(20)}
     features = pd.DataFrame(data, index=[0])
-    # Class probability
-    pred_class_prob = model.predict_proba(features)
-    # Get indices of the top 3 probabilities
-    top_3_indices = np.argsort(-pred_class_prob, axis=1)[:, :3][0]
 
-    # Get the top 3 probabilities
-    top_3_probs = np.sort(pred_class_prob[0][top_3_indices])[::-1]
+    # Diseases
+    diseases = list(disease_dict.values())
+    if row['PATHOLOGY'] in diseases:
+        # Class probability
+        pred_class_prob = model.predict_proba(features)
+        # Get indices of the top 3 probabilities
+        top_3_indices = np.argsort(-pred_class_prob, axis=1)[:, :3][0]
 
-    # Create a dictionary mapping disease names to their probabilities
-    top3_diseases_prob = {convert_number_to_disease(top_3_indices[i]): "{0:.2f}".format(top_3_probs[i]) for i in
-                          range(3)}
+        # Get the top 3 probabilities
+        top_3_probs = np.sort(pred_class_prob[0][top_3_indices])[::-1]
 
-    return top3_diseases_prob
+        # Create a dictionary mapping disease names to their probabilities
+        top3_diseases_prob = {convert_number_to_disease(top_3_indices[i]): '{0}%'.format(round(top_3_probs[i]*100), 2)
+                              for i in range(3)}
+
+        return ', '.join(f"{key}: {value}" for key, value in top3_diseases_prob.items())
+    else:
+        return 'Out of range: {0}'.format(diseases)
 
 
 def get_102_mif_prediction(model, row):
@@ -330,8 +337,8 @@ def get_102_mif_prediction(model, row):
     top3_diseases_prob = {}
     # Extract the probabilities at these indices
     for i in top_3_disease[0]:
-        probability = "{0:.2f}".format(pred_class_prob[0][i])
+        probability = '{0} %'.format(round(pred_class_prob[0][i]*100), 2)
         top3_diseases_prob[convert_48_diseases(i)] = probability
 
-    return top3_diseases_prob
+    return ', '.join(f"{key}: {value}" for key, value in top3_diseases_prob.items())
 

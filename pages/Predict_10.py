@@ -3,11 +3,11 @@ import joblib
 import numpy as np
 from xgboost import XGBClassifier
 from utils import *
+import os
 
 st.title('Predictive Diagnosis Assistant')
-
 # Load trained model
-model = joblib.load('/Users/faith/Desktop/MSDS/NEU/Semesters/Fall2023/DS5500/Project/predictive-diagnosis-assistant/trained_models/xgboost_10.joblib')
+model = joblib.load(os.path.abspath('trained_models/xgboost_10.joblib'))
 
 
 def medical_questionnaire():
