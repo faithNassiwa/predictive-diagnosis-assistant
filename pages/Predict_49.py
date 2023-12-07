@@ -32,7 +32,6 @@ def medical_questionnaire():
         facial_muscles = st.radio("Have you noticed weakness in your facial muscles and/or eyes?", ['Yes', 'No'], index=1)
         asthma_attacks = st.radio("Have you had 2 or more asthma attacks in the past year?", ['Yes', 'No'], index=1)
         antipsychotic_medication = st.radio("Have you started or taken any antipsychotic medication within the last 7 days?", ['Yes', 'No'], index=1)
-        heart_failure = st.radio("Do you have heart failure?", ['Yes', 'No'], index=1)
         lung_cancer = st.radio("Do you have family members who have had lung cancer?", ['Yes', 'No'], index=1)
         death_feeling = st.radio("Do you feel like you are dying or were you afraid that you were about to die?", ['Yes', 'No'], index=1)
         bloated_swollen_abdomen = st.radio("Do you feel your abdomen is bloated or distended (swollen due to pressure from inside)?", ['Yes', 'No'], index=1)
@@ -40,7 +39,7 @@ def medical_questionnaire():
         cluster_headaches = st.radio("Have any of your family members been diagnosed with cluster headaches?", ['Yes', 'No'], index=1)
         lesions_peel = st.radio("Do your lesions peel off?", ['Yes', 'No'], index=1)
         sensation_in_feet = st.radio("Do you have numbness, loss of sensation, or tingling in the feet?", ['Yes', 'No'], index=1)
-        intravenous_intramuscular_route = st.radio("Have you been treated in the hospital recently for nausea, agitation, intoxication, or aggressive behavior and received medication via an intravenous or intramuscular route?", ['Yes', 'No'], index=1)
+        intravenous_intramuscular_route = st.radio("Have you been treated in the hospital recently for nausea, agitation, intoxication or aggressive behavior and received medication via an intravenous or intramuscular route?", ['Yes', 'No'], index=1)
         gas_ability = st.radio("Have you been able to pass stools or gas since your symptoms increased?", ['Yes', 'No'], index=1)
         irregular_heartbeat  = st.radio("Do you feel your heart is beating very irregularly or in a disorganized pattern?", ['Yes', 'No'], index=1)
         face_paralysis = st.radio("Have you had weakness or paralysis on one side of the face, which may still be present or completely resolved?", ['Yes', 'No'], index=1)
@@ -61,7 +60,8 @@ def medical_questionnaire():
         similar_symptoms = st.radio("Have you been in contact with a person with similar symptoms in the past 2 weeks?", ['Yes', 'No'], index=1)
         liver_cirrhosis = st.radio("Do you have liver cirrhosis?", ['Yes', 'No'], index=1)
         symptoms_at_night = st.radio("Are your symptoms more prominent at night?", ['Yes', 'No'], index=1)
-        symptoms_progression = st.radio("Are the symptoms or pain increased with coughing, with an effort like lifting a weight or from forcing a bowel movement?", ['Yes', 'No'], index=1)
+        symptoms_progression = st.radio("Do you find that your symptoms have worsened over the last 2 weeks and that progressively less effort is required to cause the symptoms?", ["Yes", "No"], index=1)
+        symptoms_increased = st.radio("Are the symptoms or pain increased with coughing, with an effort like lifting a weight or from forcing a bowel movement?", ['Yes', 'No'], index=1)
         lesions_redness = st.radio("Do you have any lesions, redness or problems on your skin that you believe are related to the condition you are consulting for?", ['Yes', 'No'], index=1)
         voice_tone = st.radio("Have you noticed that the tone of your voice has become deeper, softer or hoarse?", ['Yes', 'No'], index=1)
         difficulty_speaking = st.radio("Do you have difficulty articulating words/speaking?", ['Yes', 'No'], index=1)
@@ -69,7 +69,8 @@ def medical_questionnaire():
         calcium_blockers_medication = st.radio("Do you take a calcium channel blockers (medication)?", ['Yes', 'No'], index=1)
         lesions_1cm = st.radio("Is the lesion (or are the lesions) larger than 1cm?", ['Yes', 'No'], index=1)
         intravenous_drug_use = st.radio("Are you currently using intravenous drugs?", ['Yes', 'No'], index=1)
-        pneumothorax = st.radio("Have any of your family members ever had a pneumothorax?", ['Yes', 'No'], index=1)
+        pneumothorax_family = st.radio("Have any of your family members ever had a pneumothorax?", ['Yes', 'No'], index=1)
+        pneumothorax = st.radio("Have you ever had a spontaneous pneumothorax?", ['Yes', 'No'], index=1)
         excessive_tears = st.radio("Do you feel that your eyes produce excessive tears?", ['Yes', 'No'], index=1)
         whooping_cough = st.radio("Does the person have a whooping cough?", ['Yes', 'No'], index=1)
         tiredness = st.radio("Do you feel so tired that you are unable to do your usual activities or are you stuck in your bed all day long?", ['Yes', 'No'], index=1)
@@ -82,7 +83,7 @@ def medical_questionnaire():
         chest_pain = st.radio("Do you have chest pain even at rest?", ['Yes', 'No'], index=1)
         dialysis = st.radio("Do you currently undergo dialysis?", ['Yes', 'No'], index=1)
         vaccinations = st.radio("Are your vaccinations up to date?", ['Yes', 'No'], index=1)
-        family_allergies = st.radio("Do you have any close family members who suffer from allergies (any type)hay fever or eczema?", ['Yes', 'No'], index=1)
+        family_allergies = st.radio("Do you have any close family members who suffer from allergies(any type),hay fever or eczema?", ['Yes', 'No'], index=1)
         copd = st.radio("Have you had one or several flare ups of chronic obstructive pulmonary disease(COPD) in the past year?", ['Yes', 'No'], index=1)
         poor_circulation = st.radio("Do you have a problem with poor circulation?", ['Yes', 'No'], index=1)
         itchy_eyes = st.radio("Do you have severe itching in one or both eyes?", ['Yes', 'No'], index=1)
@@ -126,39 +127,37 @@ def medical_questionnaire():
         swelling_location_options = ['0', 'cheek(L)', 'tibia(L)', 'nowhere', 'dorsal aspect of the foot(R)', 'nose', 'calf(R)', 'dorsal aspect of the foot(L)', 'calf(L)', 'sole(L)', 'posterior aspect of the ankle(L)', 'sole(R)', 'tibia(R)', 'cheek(R)', 'posterior aspect of the ankle(R)', 'ankle(L)', 'forehead', 'thigh(R)', 'ankle(R)', 'thigh(L)', 'toe (1)(R)', 'toe (1)(L)', 'toe (2)(R)']
         swelling_location = st.selectbox("Where is the swelling located?", swelling_location_options)
 
-        affected_region_options = ['0', 'internal cheek(L)', 'flank(L)', 'ankle(R)', 'thoracic spine', 'iliac fossa(L)', 'epigastric', 'nose',
-                                   'cervical spine', 'commissure(L)', 'thyroid cartilage', 'forehead', 'ankle(L)', 'side of the neck(R)', 'bottom lip(R)',
-                                   'penis', 'iliac fossa(R)', 'shoulder(R)', 'buttock(L)', 'cheek(L)', 'labia minora(R)', 'side of the neck(L)', 'belly',
-                                   'internal cheek(R)', 'palace', 'back of the neck', 'upper lip(R)', 'shoulder(L)', 'lumbar spine', 'posterior chest wall(R)',
-                                   'posterior chest wall(L)', 'flank(R)']
-        affected_region = st.selectbox("Where is the affected region located?", affected_region_options)
-
         predict_49 = st.form_submit_button('Predict 49')
         if predict_49:
             # Process responses
-            responses = process_responses_49(hiv_exposure,active_cancer,ulcers_sores, ear_infection,
-                        mobility, inability_retain_protein, allergy_exposure, chills_shivers, food_allergy,
-                        high_blood_pressure,red_cheeks,weight_loss,NOACs, unprotected_sex,lymph_nodes, facial_muscles,
-                        asthma_attacks, antipsychotic_medication,heart_failure,lung_cancer, death_feeling,
-                        bloated_swollen_abdomen, burning_sensation_in_stomach, cluster_headaches,lesions_peel,
-                        sensation_in_feet,intravenous_intramuscular_route, irregular_heartbeat,  face_paralysis,
-                        nose_throat_itchy, sight_problems, menstrual_period,copd, premature_birth, hyperthyroidism,
-                        cystic_fibrosis,vomit,anemia, sore_throat,poor_circulation, family_allergies, sti_exposure, symptoms_after_eating,chronic_kidney_failure,
-                        hiv,muscle_spams,itchy_eyes, OSA,similar_symptoms,liver_cirrhosis,symptoms_at_night,
-                        symptoms_progression,immunosuppressed, pericarditis,decrease_appetite,blood_vessels, lesions_redness,voice_tone,difficulty_speaking,ebola_exposure,
-                        calcium_blockers_medication,croup,construction,lesions_1cm,chronic_anxiety, intravenous_drug_use,pneumothorax,excessive_tears,whooping_cough,
-                        tiredness,pain_increase_movement,jaw_weakness,depression,out_of_breath,chronic_sinusitis,foreward_movement, recent_asthma,heart_defect, nose_polyps,crohns_disease,pain_location,
-                        chest_pain,dialysis,gas_ability,fluid_in_lungs, vomit_after_coughing, vaccinations,saliva_production,mood_stability,energy_drinks_consumption,
-                        coffee_tea_consumption,diarrhea_stool_frequency,Rheumatoid_Arthritis,cigarette_smoke_exposure,poor_diet,decongestants,agriculture,mining_sector,hormones_intake,
-                         rash_color, swelling_location,affected_region)
-
-
+            responses = process_responses_49(hiv_exposure, active_cancer, mood_stability, ulcers_sores, ear_infection,
+                                             mobility, inability_retain_protein, allergy_exposure, chills_shivers, food_allergy,
+                                             high_blood_pressure, red_cheeks, weight_loss,  NOACs, unprotected_sex, lymph_nodes,
+                                             facial_muscles, asthma_attacks, antipsychotic_medication, lung_cancer,
+                                             hormones_intake, death_feeling, bloated_swollen_abdomen, burning_sensation_in_stomach,
+                                             cluster_headaches, lesions_peel, sensation_in_feet, intravenous_intramuscular_route,
+                                             energy_drinks_consumption, gas_ability, irregular_heartbeat, family_allergies,
+                                             face_paralysis, decongestants, nose_throat_itchy, sight_problems, menstrual_period,
+                                             coffee_tea_consumption, premature_birth, hyperthyroidism, cystic_fibrosis, vomit,
+                                             copd, poor_circulation, pneumothorax, itchy_eyes, symptoms_progression, anemia, chronic_anxiety,
+                                             agriculture, blood_vessels, heart_defect, out_of_breath, chronic_sinusitis,
+                                             foreward_movement, Rheumatoid_Arthritis, diarrhea_stool_frequency, croup,
+                                             saliva_production, fluid_in_lungs, pericarditis, vomit_after_coughing,
+                                             pain_increase_movement, sore_throat, sti_exposure, symptoms_after_eating,
+                                             chronic_kidney_failure, hiv, muscle_spams, OSA, mining_sector,
+                                             similar_symptoms, liver_cirrhosis, symptoms_at_night, symptoms_increased,
+                                             lesions_redness, voice_tone, difficulty_speaking,ebola_exposure, calcium_blockers_medication,
+                                             lesions_1cm, intravenous_drug_use, immunosuppressed, pneumothorax_family,
+                                             excessive_tears, whooping_cough, tiredness, jaw_weakness, depression,
+                                             recent_asthma, nose_polyps, crohns_disease, construction, pain_location,
+                                             chest_pain, dialysis, poor_diet, vaccinations, cigarette_smoke_exposure,
+                                             decrease_appetite, rash_color, swelling_location)
 
             # Generate prediction
             prediction = model.predict(responses)
 
             # Display the prediction
-            st.write(f"**Predicted Diagonsis:** {convert_number_to_disease(prediction[0])}")
+            st.write(f"**Predicted Diagonsis:** {convert_48_diseases(prediction[0])}")
 
             # Class probability
             pred_class_prob = model.predict_proba(responses)
@@ -167,7 +166,7 @@ def medical_questionnaire():
             # Extract the probabilities at these indices
             for indices in top_3_disease:
                 for i in indices:
-                    top3_diseases_prob[convert_number_to_disease(i)] = pred_class_prob[0][i]
+                    top3_diseases_prob[convert_48_diseases(i)] = pred_class_prob[0][i]
 
             st.write(f"**Top 3 Possible Diagnoses:**")
             for key, value in top3_diseases_prob.items():
