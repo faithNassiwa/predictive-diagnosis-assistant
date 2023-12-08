@@ -24,7 +24,7 @@ test_df["Is the lesion (or are the lesions) larger than 1cm?"] = test_df["Is the
 
 
 def medical_questionnaire():
-    with st.form("medical_questionnaire"):
+    with st.container():
         # Medical History
         st.subheader("Medical History")
         swollen_lymph_nodes = st.radio("Do you have swollen or painful lymph nodes?", ['Yes', 'No'], index=1)
@@ -66,7 +66,7 @@ def medical_questionnaire():
                                    'posterior chest wall(L)', 'flank(R)']
         affected_region = st.selectbox("Where is the affected region located?", affected_region_options)
 
-        predict_10 = st.form_submit_button('Predict 10')
+        predict_10 = st.button('Predict 10')
 
         top3_diseases_prob = {}
         if predict_10:
@@ -96,9 +96,9 @@ def medical_questionnaire():
                     st.write(f"- {key}: `{value*100:.2f}`%")
             else:
 
-                st.caption("We need more information...")
-                with st.form('More Information'):
-                    st.subheader("Other Medical History")
+                st.caption(":warning: :red[We need more information because the predicted diagnosis is under 90% accuracy.]")
+                with st.container():
+                    st.subheader("Additional Medical History")
                     hiv_exposure = hiv_intercourse
                     active_cancer = st.radio("Do you have an active cancer?", ['Yes', 'No'], index=1)
                     ulcers_sores = st.radio("Do you have painful mouth ulcers or sores?", ['Yes', 'No'], index=1)
@@ -260,7 +260,8 @@ def medical_questionnaire():
                     mining_sector = st.radio("Do you work in the mining sector?", ['Yes', 'No'], index=1)
                     hormones_intake = st.radio("'Do you currently take hormones?", ['Yes', 'No'], index=1)
                     out_of_breath = st.radio("Do you feel out of breath with minimal physical effort?", ['Yes', 'No'], index=1)
-                    predict_49 = st.form_submit_button('Predict 49')
+                    predict_49 = st.button('Predict 49')
+
                     if predict_49:
                         # Process responses
                         responses = process_responses_49(hiv_exposure, active_cancer, mood_stability, ulcers_sores,
