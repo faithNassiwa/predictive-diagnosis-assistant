@@ -28,7 +28,6 @@ def medical_questionnaire():
         # Medical History
         st.subheader("Medical History")
         swollen_lymph_nodes = st.radio("Do you have swollen or painful lymph nodes?", ['Yes', 'No'], index=1)
-        hiv_intercourse = st.radio("Have you had sexual intercourse with an HIV-positive partner in the past 12 months?", ['Yes', 'No'], index=1)
         taking_noacs = st.radio("Are you taking any new oral anticoagulants (NOACs)?", ['Yes', 'No'], index=1)
         chronic_copd = st.radio("Do you have a chronic obstructive pulmonary disease (COPD)?", ['Yes', 'No'], index=1)
         heart_failure = st.radio("Do you have heart failure?", ['Yes', 'No'], index=1)
@@ -36,20 +35,20 @@ def medical_questionnaire():
         had_sti = st.radio("Have you ever had a sexually transmitted infection?", ['Yes', 'No'], index=1)
         skin_issues = st.radio("Do you have any lesions, redness or problems on your skin that you believe are related to the condition you are consulting for?", ['Yes', 'No'], index=1)
         taken_antipsychotics = st.radio("Have you started or taken any antipsychotic medication within the last 7 days?", ['Yes', 'No'], index=1)
+        immunosuppressed = st.radio("Are you immunosuppressed?", ['Yes', 'No'], index=1)
+        pain_related = st.radio("Do you have pain somewhere, related to your reason for consulting?", ['Yes', 'No'], index=1)
+        severe_eye_itching = st.radio("Do you have severe itching in one or both eyes?", ['Yes', 'No'], index=1)
 
         # Lifestyle and Environmental Factors
         st.subheader("Lifestyle and Environmental Factors")
+        hiv_intercourse = st.radio(
+            "Have you had sexual intercourse with an HIV-positive partner in the past 12 months?", ['Yes', 'No'],
+            index=1)
         unprotected_sex = st.radio("Have you had unprotected sex with more than one partner in the last 6 months?", ['Yes', 'No'], index=1)
         itchy_nose_throat = st.radio("Is your nose or the back of your throat itchy?", ['Yes', 'No'], index=1)
         recent_surgery = st.radio("Have you had surgery within the last month?", ['Yes', 'No'], index=1)
         take_stimulant_drugs = st.radio("Do you regularly take stimulant drugs?", ['Yes', 'No'], index=1)
         exposed_to_smoke = st.radio("Are you exposed to secondhand cigarette smoke on a daily basis?", ['Yes', 'No'], index=1)
-
-        # Social History
-        st.subheader("Social History")
-        immunosuppressed = st.radio("Are you immunosuppressed?", ['Yes', 'No'], index=1)
-        pain_related = st.radio("Do you have pain somewhere, related to your reason for consulting?", ['Yes', 'No'], index=1)
-        severe_eye_itching = st.radio("Do you have severe itching in one or both eyes?", ['Yes', 'No'], index=1)
 
         # Multiple Choice Questions
         st.subheader("Additional Details")
