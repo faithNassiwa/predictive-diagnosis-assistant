@@ -26,7 +26,7 @@ Ultimately, the overarching goal is to enhance patient care. By providing doctor
 * Navigate to the application in the web browser 
 
 ### Hosted Application
-Visit: [https://predictive-diagnosis-assistant.streamlit.app/]
+Visit: https://predictive-diagnosis-assistant.streamlit.app/
 
 ## Future Work
 * Adding a database as the data source 
