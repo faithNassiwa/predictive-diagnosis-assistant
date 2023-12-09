@@ -1,6 +1,4 @@
 # A Predictive Diagnosis Assistant in an Electronic Medical Records Platform
-The Predictive Diagnosis Assistant is a tool designed to expedite and streamline doctors’ diagnostic process.
-
 ## Summary
 The Predictive Diagnosis Assistant is a tool designed to expedite and streamline doctors’ diagnostic process which can sometimes devolve into trial and error, especially when patients present symptoms common to multiple diseases. This uncertainty often results in misdiagnoses, leading both patients and facilities to incur unnecessary costs and waste time on unneeded medical procedures, such as laboratory tests and medications. Our project aims to develop a platform where symptoms entered from patient records are used to predict possible diseases or conditions which will provide a starting point for healthcare providers to make a comprehensive review of the patient’s symptoms and make the best diagnosis. 
 
